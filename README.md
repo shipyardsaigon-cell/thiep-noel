@@ -4,6 +4,8 @@ Thiệp Giáng sinh làm bằng HTML, CSS và JavaScript, trong series **Code c�
 
 👉 Mở thiệp: https://shipyardsaigon-cell.github.io/thiep-noel/
 
+🎬 Video hướng dẫn làm thiệp: https://youtu.be/gJ3uYwRBPik
+
 ## Có gì trong thiệp
 - Phong bì đỏ bấm vào thì mở, thiệp trượt ra (CSS `transition`, `transform`)
 - Cây thông vẽ bằng CSS, đèn nhấp nháy và ngôi sao phát sáng (`@keyframes`)
