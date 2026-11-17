@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thiệp Giáng Sinh</title>
+<meta name="description" content="Thiệp Giáng sinh tự làm bằng HTML, CSS và JavaScript. Series Code cùng Shipyard.">
+<meta property="og:title" content="🎄 Bạn nhận được một tấm thiệp Giáng sinh!">
+<meta property="og:description" content="Mở phong bì để xem lời chúc nhé. Thiệp làm bằng HTML, CSS, JavaScript.">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #071229;
+    --night-2: #0f2350;
+    --red: #c8102e;
+    --red-dark: #8e0b20;
+    --gold: #f5c542;
+    --paper: #fff8ec;
+    --ink: #3a2a1a;
+    --pine: #1f7a3f;
+    --pine-dark: #145a2c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  html { background: var(--night); }
+  body {
+    font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+    color: #fff;
+    background: radial-gradient(ellipse at 50% 0%, var(--night-2), var(--night) 70%) fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* Twinkling background stars and falling snow (created by JavaScript) */
+  .sky { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 50% { opacity: .15; } }
+  .flake { position: fixed; top: -30px; color: #fff; pointer-events: none; z-index: 1; animation: fall linear forwards; text-shadow: 0 0 6px rgba(255,255,255,.8); }
+  @keyframes fall { to { transform: translate(var(--drift), 110vh) rotate(360deg); } }
+
+  /* Snowy ground */
+  .ground { position: fixed; left: -5%; right: -5%; bottom: -40px; height: 110px; background: #eef4ff; border-radius: 50% 50% 0 0; z-index: 1; box-shadow: 0 -10px 40px rgba(255,255,255,.25); }
+
+  main { position: relative; z-index: 2; width: 100%; max-width: 560px; padding: 28px 16px 140px; text-align: center; }
+  .hello { font-size: 18px; opacity: .85; margin: 6px 0 22px; min-height: 1.4em; }
+  .hello b { color: var(--gold); }
+
+  /* Envelope */
+  .envelope { position: relative; width: min(92vw, 420px); height: 280px; margin: 180px auto 0; cursor: pointer; perspective: 1200px; }
+  .env-back { position: absolute; inset: 0; background: var(--red-dark); border-radius: 10px; }
+  .env-front { position: absolute; inset: 0; border-radius: 10px; z-index: 3;
+    /* Side pockets meet the flap tip (160px), solid below it, so the card stays hidden until opened */
+    background:
+      linear-gradient(to top right, var(--red) 50%, transparent 50.5%) left top / 50% 160px no-repeat,
+      linear-gradient(to top left, var(--red) 50%, transparent 50.5%) right top / 50% 160px no-repeat,
+      linear-gradient(var(--red), var(--red)) left bottom / 100% calc(100% - 159px) no-repeat;
+    filter: drop-shadow(0 -2px 2px rgba(0,0,0,.15)); }
+  .flap { position: absolute; left: 0; right: 0; top: 0; height: 160px; z-index: 4; transform-origin: top; transition: transform .7s ease, z-index 0s .35s;
+    background: linear-gradient(to bottom left, #d81f3c 50%, transparent 50.5%) left / 50% 100% no-repeat,
+                linear-gradient(to bottom right, #d81f3c 50%, transparent 50.5%) right / 50% 100% no-repeat;
+    filter: drop-shadow(0 3px 3px rgba(0,0,0,.25)); }
+  .seal { position: absolute; left: 50%; top: 128px; width: 64px; height: 64px; margin-left: -32px; z-index: 5; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffe08a, var(--gold) 55%, #b8891c); display: grid; place-items: center; font-size: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.35); transition: opacity .3s; animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { transform: scale(1.08); } }
+  .tap { position: absolute; left: 0; right: 0; bottom: -44px; font-size: 16px; opacity: .8; }
+  .envelope.open .flap { transform: rotateX(180deg); z-index: 1; }
+  .envelope.open .seal, .envelope.open .tap { opacity: 0; pointer-events: none; }
+
+  /* Card inside the envelope */
+  .card { position: absolute; left: 4%; right: 4%; top: 12px; height: 255px; z-index: 2; overflow: hidden;
+    background: var(--paper); color: var(--ink); border-radius: 10px; padding: 18px 20px; border: 3px double var(--gold);
+    transition: transform 1s cubic-bezier(.2,.9,.3,1.2) .5s, height 1s ease .5s; }
+  .envelope.open .card { transform: translateY(-190px); height: 520px; z-index: 6; box-shadow: 0 20px 50px rgba(0,0,0,.45); transition-delay: .55s; }
+  .card { display: flex; flex-direction: column; }
+  .card .msg { flex: 1; }
+  .card h1 { font-family: 'Dancing Script', cursive; color: var(--red); font-size: 44px; margin: 4px 0 6px; line-height: 1.1; }
+
+  /* Christmas tree drawn with CSS triangles */
+  .tree { position: relative; width: 150px; height: 150px; margin: 0 auto; }
+  .tree .layer { position: absolute; left: 50%; width: 0; height: 0; border-style: solid; border-color: transparent transparent var(--pine) transparent; transform: translateX(-50%); }
+  .tree .l1 { top: 18px; border-width: 0 40px 46px 40px; }
+  .tree .l2 { top: 44px; border-width: 0 56px 56px 56px; border-bottom-color: #23894a; }
+  .tree .l3 { top: 74px; border-width: 0 72px 62px 72px; border-bottom-color: var(--pine-dark); }
+  .tree .trunk { position: absolute; left: 50%; bottom: 0; width: 22px; height: 16px; margin-left: -11px; background: #7a4a22; border-radius: 2px; }
+  .tree .top { position: absolute; left: 50%; top: -6px; transform: translateX(-50%); font-size: 28px; filter: drop-shadow(0 0 8px var(--gold)); animation: glow 1.5s ease-in-out infinite; }
+  @keyframes glow { 50% { filter: drop-shadow(0 0 2px var(--gold)); transform: translateX(-50%) scale(.9); } }
+  .light { position: absolute; width: 9px; height: 9px; border-radius: 50%; animation: blink 1.2s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: .2; } }
+
+  .msg { font-size: 17px; line-height: 1.6; min-height: 110px; margin: 8px 0 4px; white-space: pre-line; }
+  .msg::after { content: '▍'; color: var(--red); animation: blink 1s steps(1) infinite; }
+  .msg.done::after { content: ''; }
+  .sign { font-family: 'Dancing Script', cursive; font-size: 26px; color: var(--red-dark); text-align: right; min-height: 34px; opacity: 0; transition: opacity .8s; }
+  .sign.show { opacity: 1; }
+
+  /* Buttons and the "make your own card" box */
+  .actions { margin-top: 92px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; opacity: 0; transition: opacity .6s; }
+  .actions.show { opacity: 1; }
+  button, .btn { font: 600 16px 'Be Vietnam Pro', sans-serif; border: 0; border-radius: 999px; padding: 11px 20px; cursor: pointer; color: #fff; background: var(--red); box-shadow: 0 4px 0 var(--red-dark); }
+  button:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--red-dark); }
+  button.ghost { background: rgba(255,255,255,.12); box-shadow: none; border: 1px solid rgba(255,255,255,.35); }
+  .maker { display: none; margin: 18px auto 0; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); border-radius: 16px; padding: 18px; text-align: left; }
+  .maker.show { display: block; }
+  .maker label { display: block; font-size: 14px; opacity: .85; margin: 10px 0 4px; }
+  .maker input, .maker textarea { width: 100%; font: 16px 'Be Vietnam Pro', sans-serif; padding: 10px 12px; border-radius: 10px; border: 0; color: var(--ink); }
+  .maker textarea { height: 78px; resize: vertical; }
+  .maker .row { display: flex; gap: 8px; margin-top: 12px; }
+  .maker .link { margin-top: 10px; font-size: 14px; word-break: break-all; color: var(--gold); min-height: 1.2em; }
+  footer { position: fixed; bottom: 10px; left: 0; right: 0; z-index: 3; text-align: center; font-size: 13px; color: #33507a; }
+  footer a { color: #1f4f8f; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="sky" id="sky"></div>
+<div class="ground"></div>
+
+<main>
+  <div class="hello" id="hello">Bạn có một tấm thiệp Giáng sinh 💌</div>
+
+  <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Mở phong bì">
+    <div class="env-back"></div>
+    <div class="card" id="card">
+      <div class="tree" id="tree">
+        <div class="layer l1"></div><div class="layer l2"></div><div class="layer l3"></div>
+        <div class="trunk"></div><div class="top">⭐</div>
+      </div>
+      <h1>Giáng Sinh An Lành</h1>
+      <div class="msg" id="msg"></div>
+      <div class="sign" id="sign"></div>
+    </div>
+    <div class="env-front"></div>
+    <div class="flap"></div>
+    <div class="seal">🎄</div>
+    <div class="tap">Chạm vào phong bì để mở ✨</div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button id="music">🔔 Bật nhạc</button>
+    <button class="ghost" id="again">↺ Xem lại</button>
+    <button class="ghost" id="make">✍️ Tạo thiệp của em</button>
+  </div>
+
+  <div class="maker" id="maker">
+    <label for="to">Gửi tới</label>
+    <input id="to" maxlength="30" placeholder="Ví dụ: Mẹ, cô Lan, bạn Minh">
+    <label for="from">Người gửi</label>
+    <input id="from" maxlength="30" placeholder="Tên của em">
+    <label for="wish">Lời chúc (có thể để trống)</label>
+    <textarea id="wish" maxlength="160" placeholder="Chúc ... một mùa Giáng sinh thật vui!"></textarea>
+    <div class="row">
+      <button id="create">Tạo link thiệp</button>
+      <button class="ghost" id="copy">Sao chép</button>
+    </div>
+    <div class="link" id="link"></div>
+  </div>
+</main>
+
+<footer>Thiệp tự làm bằng HTML, CSS, JavaScript · <a href="https://www.youtube.com/@saigonshipyard" target="_blank" rel="noopener">Code cùng Shipyard</a></footer>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  // Read the personal details from the link, e.g. ?to=Mẹ&from=An&wish=...
+  const params = new URLSearchParams(location.search);
+  const to = (params.get('to') || '').slice(0, 30);
+  const from = (params.get('from') || '').slice(0, 30);
+  const wish = (params.get('wish') || '').slice(0, 160);
+  const message = (to ? 'Gửi ' + to + ',\n' : '') +
+    (wish || 'Chúc ' + (to || 'bạn') + ' một mùa Giáng sinh thật ấm áp, nhiều niềm vui và thật nhiều quà! Năm mới thật nhiều sức khoẻ và hạnh phúc nhé! 🎁');
+  if (to) {
+    $('hello').textContent = '';
+    $('hello').append('Có thiệp Giáng sinh gửi tới ');
+    const b = document.createElement('b');
+    b.textContent = to;
+    $('hello').append(b, ' 💌');
+  }
+
+  // Background stars
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 75 + '%';
+    s.style.animationDelay = Math.random() * 3 + 's';
+    $('sky').appendChild(s);
+  }
+
+  // Tree lights in different colors
+  const colors = ['#ff4d4d', '#ffd23f', '#4dd2ff', '#ff8cf0', '#7dff8c'];
+  const spots = [[66, 50], [82, 58], [55, 82], [92, 88], [74, 96], [42, 116], [64, 120], [88, 118], [108, 112]];
+  spots.forEach(([x, y], i) => {
+    const l = document.createElement('div');
+    l.className = 'light';
+    l.style.left = x + 'px';
+    l.style.top = y + 'px';
+    l.style.background = colors[i % colors.length];
+    l.style.boxShadow = '0 0 8px ' + colors[i % colors.length];
+    l.style.animationDelay = (i % 3) * 0.4 + 's';
+    $('tree').appendChild(l);
+  });
+
+  // Falling snow: a new flake every 180 ms, removed once it has fallen
+  function snow() {
+    const f = document.createElement('div');
+    f.className = 'flake';
+    f.textContent = Math.random() < 0.6 ? '❄' : '•';
+    f.style.left = Math.random() * 100 + 'vw';
+    f.style.fontSize = 10 + Math.random() * 18 + 'px';
+    f.style.opacity = 0.5 + Math.random() * 0.5;
+    f.style.setProperty('--drift', (Math.random() * 120 - 60) + 'px');
+    const seconds = 6 + Math.random() * 6;
+    f.style.animationDuration = seconds + 's';
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), seconds * 1000);
+  }
+  setInterval(snow, 180);
+
+  // Typewriter effect for the wish
+  let typing;
+  function typeMessage() {
+    clearInterval(typing);
+    $('msg').textContent = '';
+    $('msg').classList.remove('done');
+    $('sign').classList.remove('show');
+    const chars = [...message];
+    let i = 0;
+    typing = setInterval(() => {
+      $('msg').textContent += chars[i++];
+      if (i >= chars.length) {
+        clearInterval(typing);
+        $('msg').classList.add('done');
+        $('sign').textContent = from ? '— ' + from + ' —' : '— Merry Christmas —';
+        $('sign').classList.add('show');
+        $('actions').classList.add('show');
+      }
+    }, 45);
+  }
+
+  function openCard() {
+    if ($('envelope').classList.contains('open')) return;
+    $('envelope').classList.add('open');
+    setTimeout(typeMessage, 1500);
+    playMelody();
+  }
+  $('envelope').addEventListener('click', openCard);
+  $('envelope').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') openCard(); });
+  $('again').addEventListener('click', () => {
+    $('envelope').classList.remove('open');
+    $('actions').classList.remove('show');
+    $('msg').textContent = '';
+    setTimeout(openCard, 900);
+  });
+
+  // "Jingle Bells" chorus (public domain) played with the Web Audio API as soft bells
+  const N = { C: 523.25, D: 587.33, E: 659.25, F: 698.46, G: 783.99 };
+  const tune = [['E',1],['E',1],['E',2],['E',1],['E',1],['E',2],['E',1],['G',1],['C',1.5],['D',.5],['E',4],
+                ['F',1],['F',1],['F',1.5],['F',.5],['F',1],['E',1],['E',1],['E',.5],['E',.5],['E',1],['D',1],['D',1],['E',1],['D',2],['G',2]];
+  let audio, musicOn = false;
+  function bell(freq, at, len) {
+    const o = audio.createOscillator(), o2 = audio.createOscillator(), g = audio.createGain();
+    o.type = 'sine'; o.frequency.value = freq;
+    o2.type = 'triangle'; o2.frequency.value = freq * 2;
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(0.25, at + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + Math.max(0.35, len));
+    o.connect(g); o2.connect(g); g.connect(audio.destination);
+    o.start(at); o2.start(at); o.stop(at + len + 0.4); o2.stop(at + len + 0.4);
+  }
+  function playMelody() {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      audio.resume();
+      let t = audio.currentTime + 0.1;
+      const beat = 0.3;
+      for (const [n, b] of tune) { bell(N[n], t, b * beat); t += b * beat; }
+      musicOn = true;
+      $('music').textContent = '🔔 Nghe lại nhạc';
+    } catch (e) { /* audio is optional */ }
+  }
+  $('music').addEventListener('click', playMelody);
+
+  // Make your own card: build a share link with the names in it
+  $('make').addEventListener('click', () => {
+    $('maker').classList.toggle('show');
+    if ($('maker').classList.contains('show')) $('maker').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+  function buildLink() {
+    const p = new URLSearchParams();
+    if ($('to').value.trim()) p.set('to', $('to').value.trim());
+    if ($('from').value.trim()) p.set('from', $('from').value.trim());
+    if ($('wish').value.trim()) p.set('wish', $('wish').value.trim());
+    return location.origin + location.pathname + (p.toString() ? '?' + p : '');
+  }
+  $('create').addEventListener('click', () => { $('link').textContent = buildLink(); });
+  $('copy').addEventListener('click', async () => {
+    const url = buildLink();
+    $('link').textContent = url;
+    try {
+      if (navigator.share) await navigator.share({ title: 'Thiệp Giáng sinh', url });
+      else { await navigator.clipboard.writeText(url); $('copy').textContent = 'Đã chép ✓'; }
+    } catch (e) { /* user closed the share sheet */ }
+  });
+</script>
+</body>
+</html>
