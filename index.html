@@ -245,6 +245,8 @@
     playMelody();
   }
   $('envelope').addEventListener('click', openCard);
+  // ?autoopen=1 opens the envelope by itself (used when the card is shown inside a video)
+  if (params.get('autoopen')) setTimeout(openCard, 1800);
   $('envelope').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') openCard(); });
   $('again').addEventListener('click', () => {
     $('envelope').classList.remove('open');
